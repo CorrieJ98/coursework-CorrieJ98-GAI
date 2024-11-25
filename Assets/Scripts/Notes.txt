@@ -1,0 +1,6 @@
+﻿AgentSeekBehaviour taken from Hamids EnemySeek.cs
+
+Dodge Behaviour should be move and shoot tactics
+possibly with bounding movement? At the very least
+this should have BANGBANG-MOVE-BANGBANG function
+"fire without movement is a waste of ammo, but movement without fire is suicide"
