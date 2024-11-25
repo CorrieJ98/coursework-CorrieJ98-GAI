@@ -18,8 +18,14 @@ public class Pathfinder : PathfinderBase
     protected override void Awake()
     {
         base.Awake();
-        // coursework states arg0 should be "nodes" not "nodes.Length
         GetComponent<GridRenderer>().Initialise(Map.MapWidth, Map.MapHeight, vGridUnitSize.x, vGridUnitSize.y);
+        
+        /*
+         set start and end points to be ally and enemy
+         agents respectively. currently these are set to
+         v2.zero
+         */
+
         ExecuteAlgorithm();
     }
     public void ExecuteAlgorithm()
