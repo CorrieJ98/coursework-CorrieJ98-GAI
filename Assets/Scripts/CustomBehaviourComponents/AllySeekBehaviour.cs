@@ -11,10 +11,10 @@ class AllyAgentSeek : SteeringBehaviour
 {
 
     [SerializeField] private float arrivalRadius = 100f;
-    public override Vector3 UpdateBehaviour(SteeringAgent _steeringAgent)
+    public override Vector3 UpdateBehaviour(SteeringAgent steeringAgent)
     {
         
-        var allySteeringAgent = _steeringAgent as AllyAgent;
+        var allySteeringAgent = steeringAgent as AllyAgent;
         
         Vector3 targetPosition = allySteeringAgent.startPosition;
         Vector3 moveDist = targetPosition - transform.position;
@@ -31,12 +31,12 @@ class AllyAgentSeek : SteeringBehaviour
             Arrival(moveDist);
         }
             desiredVelocity = Vector3.Normalize(targetPosition - transform.position) * SteeringAgent.MaxCurrentSpeed;
-        steeringVelocity = desiredVelocity - _steeringAgent.CurrentVelocity;
+        steeringVelocity = desiredVelocity - steeringAgent.CurrentVelocity;
         return steeringVelocity;
     }
 
-    private Vector3 Arrival(Vector3 _moveDist)
+    private Vector3 Arrival(Vector3 moveDist)
     {   
-        return desiredVelocity = Vector3.Normalize(_moveDist) * _moveDist.magnitude;
+        return desiredVelocity = Vector3.Normalize(moveDist) * moveDist.magnitude;
     }
 }

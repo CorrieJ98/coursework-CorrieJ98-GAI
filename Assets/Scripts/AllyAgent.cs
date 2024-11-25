@@ -5,6 +5,8 @@ public class AllyAgent : SteeringAgent
 	// placeholder for later
 	// private enum AllyAgentFSM {IDLE, MOVING, ENGAGE_ENEMY, RETREAT, DODGE}
 
+	private Pathfinder allyPathfinder;
+
 	private AllyAgentSeek seekBehaviour;
 	private AllyAgentFlee fleeBehaviour;
 	private AllyAgentFleeRocket fleeRocketBehaviour;
@@ -18,6 +20,7 @@ public class AllyAgent : SteeringAgent
 
 	protected override void InitialiseFromAwake()
 	{
+		allyPathfinder = gameObject.AddComponent<Pathfinder>();
         seekBehaviour = gameObject.AddComponent<AllyAgentSeek>();
 		fleeBehaviour= gameObject.AddComponent<AllyAgentFlee>();
 		fleeRocketBehaviour = gameObject.AddComponent<AllyAgentFleeRocket>();

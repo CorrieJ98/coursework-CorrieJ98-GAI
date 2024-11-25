@@ -4,3 +4,11 @@ Dodge Behaviour should be move and shoot tactics
 possibly with bounding movement? At the very least
 this should have BANGBANG-MOVE-BANGBANG function
 "fire without movement is a waste of ammo, but movement without fire is suicide"
+
+NOTE possibly meaningful
+hamids incr/decr is PROCEEDED
+with the operator (ie ++i rather than i++)
+does this make a difference??
+
+i = 1    ++i     i increments to 2 then returns 2
+i = 1    i++     i returns 1 then increments to 2    must save a temporary variable to carry this out!!!
