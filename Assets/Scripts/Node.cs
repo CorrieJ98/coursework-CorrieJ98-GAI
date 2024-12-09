@@ -21,17 +21,20 @@ public class Node : IComparable<Node>
     /// <summary>Stores the cost to get to neighbour node from this node. This array has the same element layout as "neigbours"</summary>
     public int[] neighbourCosts;
 
+    public Map.Terrain terrain;
+    public float terrainPenalty;
+
     /// <summary>Final cost that is a summation of g+ h (used in A* and Dijkstra only)</summary>
     public int f;
 
     /// <summary>Goal cost that is the current cost to get to this node (used in A* and Dijkstra only)</summary>
     public int g;
 
-    /// <summary>Heuristic cost that is the best guess to get to the goal bode from here (used in A* only)</summary>
+    /// <summary>Heuristic cost that is the best guess to get to the goal node from here (used in A* only)</summary>
     public int h;
 
     /// <summary>
-    /// Keeps track of if this node is theorectically on the open list, therefore its been a neighbouring node during an iteration
+    /// Keeps track of if this node is theoretically on the open list, therefore its been a neighbouring node during an iteration
     /// and therefore been added to the list for future consideration by the algorithm
     /// </summary>
     public bool onOpenList = false;
@@ -63,7 +66,7 @@ public class Node : IComparable<Node>
     }
 
     /// <summary>
-    /// Resets all temporary variables used in an algoritm
+    /// Resets all temporary variables used in an algorithm
     /// </summary>
     public void Reset()
     {

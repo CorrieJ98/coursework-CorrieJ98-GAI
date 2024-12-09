@@ -9,9 +9,8 @@ using UnityEngine;
 
 public class PathfinderBase : MonoBehaviour
 {
-    //<summary>x moveCost, y moveCost, diagonal moveCost</summary>
+    // Vx = x moveCost, Vy = y moveCost, Vz = diagonal moveCost
     [SerializeField] protected Vector3Int vMovementCost = new Vector3Int(10,10,14);
-
     #region obsolete legacy code
     //[SerializeField] protected int movementCostX = 10;
     //[SerializeField] protected int movementCostY = 10;
@@ -26,20 +25,16 @@ public class PathfinderBase : MonoBehaviour
     protected byte[] initialMapData;    // call GetMapData() from Map.cs to populate this array
     protected Node[] nodes;
 
-    // Map.cs map width & height are 100. DO NOT CHANGE
-    protected Vector2Int vNodeArea = new Vector2Int(100,100);
-
-    private static Map map;
+    protected Vector2Int vNodeArea = new Vector2Int(Map.MapWidth,Map.MapHeight);
 
     protected virtual void Awake()
     {
-        if(map == null)
+        if(GameData.Instance.Map == null)
         {
             throw new System.NotImplementedException("PathfinderBase.cs -> map = GetComponent<Map> is null");
         }
 
-        map = GetComponent<Map>();
-        initialMapData = map.GetMapData();
+        initialMapData = GameData.Instance.Map.GetMapData();
 
         movementDiagMinusXY = vMovementCost.z - (vMovementCost.x + vMovementCost.y);
         CreateNodes();
@@ -57,6 +52,8 @@ public class PathfinderBase : MonoBehaviour
                 Node node = new Node();
                 node.x = x;
                 node.y = y;
+                node.terrain = GameData.Instance.Map.GetTerrainAt(x, y);
+                node.terrainPenalty = GetTerrainPenalty(node);
                 nodes[x = (vNodeArea.x * y)] = node;
             }
         }
@@ -122,7 +119,7 @@ public class PathfinderBase : MonoBehaviour
                         }
 
                         node.neighbours[connectedNodesIndex] = nodes[neighbourX + (neighbourY * vNodeArea.x)];
-                        node.neighbourCosts[connectedNodesIndex] = CalculateInitialCost(nodeX, nodeY, neighbourX, neighbourY);
+                        node.neighbourCosts[connectedNodesIndex] = CalculateInitialCost(nodeX, nodeY, neighbourX, neighbourY) * (int)GetTerrainPenalty(node.neighbours[connectedNodesIndex]);
                         ++connectedNodesIndex;
                     }
                 }
@@ -145,6 +142,26 @@ public class PathfinderBase : MonoBehaviour
         return vMovementCost.z;
     }
 
+    protected float GetTerrainPenalty(Node n)
+    {
+        float penalty = 1.0f;
+
+        switch (n.terrain)
+        {
+            case Map.Terrain.Water:
+                penalty = 1.0f / SteeringAgent.WaterSpeedFactor;
+                break;
+
+            case Map.Terrain.Mud: 
+                penalty = 1.0f / SteeringAgent.MudSpeedFactor;
+                break;
+
+            default:
+                penalty = 1.0f; break;
+        }
+       
+        return penalty ;
+    }
     protected List<Node> GetFoundPath(Node endNode)
     {
         List<Node> foundPath = new List<Node>();

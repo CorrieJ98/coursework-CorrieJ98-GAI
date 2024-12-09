@@ -10,19 +10,18 @@ public class Pathfinder : PathfinderBase
 
     public enum SearchType
     {
-        DFS, BFS, DIJKSTRA, ASTAR
+        DIJKSTRA, ASTAR
     }
 
-    public SearchType searchType = SearchType.DFS;
+    public SearchType searchType = SearchType.ASTAR;
 
     protected override void Awake()
     {
         base.Awake();
-        GetComponent<GridRenderer>().Initialise(Map.MapWidth, Map.MapHeight, vGridUnitSize.x, vGridUnitSize.y);
         
         /*
          set start and end points to be ally and enemy
-         agents respectively. currently these are set to
+         agents house points respectively. currently these are set to
          v2.zero
          */
 
@@ -44,12 +43,6 @@ public class Pathfinder : PathfinderBase
 
         switch (searchType)
         {
-            case SearchType.DFS:
-                path = DepthFirstSearch(startNode, endNode);
-                break;
-            case SearchType.BFS:
-                path = BreadthFirstSearch(startNode, endNode);
-                break;
             case SearchType.DIJKSTRA:
                 path = Dijkstra(startNode, endNode);
                 break;
@@ -60,92 +53,6 @@ public class Pathfinder : PathfinderBase
 
         // obsolete from pathfinding coursework
         // GetComponent<GridRenderer>().RenderPath(path);
-    }
-
-    public List<Node> DepthFirstSearch(Node startNode, Node endNode)
-    {
-        startNode.onOpenList = true;
-
-        Stack<Node> nodesStack = new Stack<Node>();
-        nodesStack.Push(startNode);
-
-        int visitOrder = 0; // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not bbe used in production code
-
-        while (nodesStack.Count > 0)
-        {
-            Node currentNode = nodesStack.Pop();
-
-            Debug.Log(currentNode.x + ", " + currentNode.y);
-            currentNode.visitOrder = visitOrder++;   // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not bbe used in production code
-
-            if (currentNode == endNode)
-            {
-                return GetFoundPath(endNode);
-            }
-
-            Node[] neighbours = currentNode.neighbours;
-            int neighboursCount = neighbours.Length;
-            for (int neighbourIndex = 0; neighbourIndex < neighboursCount; ++neighbourIndex)
-            {
-                Node currentNeighbour = neighbours[neighbourIndex];
-                if (!currentNeighbour.onOpenList)
-                {
-                    currentNeighbour.onOpenList = true;
-                    currentNeighbour.parent = currentNode;
-
-                    nodesStack.Push(currentNeighbour);
-                }
-            }
-        }
-
-        // No path has been found
-        return GetFoundPath(null);
-    }
-
-    public List<Node> RecurvsiveDepthFirstSearch(Node startNode, Node endNode, int visitOrder = 0)
-    {
-        throw new NotImplementedException();
-    }
-    private List<Node> BreadthFirstSearch(Node startNode, Node endNode)
-    {
-        // almost direct copy of DFS except using Queue<T> rather than Stack<T> to ensure FIFO (First In First Out)
-
-        startNode.onOpenList = true;
-
-        Queue<Node> nodeQueue = new Queue<Node>();
-        nodeQueue.Enqueue(startNode);
-
-        int visitOrder = 0; // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not bbe used in production code
-
-        while (nodeQueue.Count > 0)
-        {
-            Node currentNode = nodeQueue.Dequeue();
-
-            Debug.Log(currentNode.x + ", " + currentNode.y);
-            currentNode.visitOrder = visitOrder++;   // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not bbe used in production code
-
-            if (currentNode == endNode)
-            {
-                return GetFoundPath(endNode);
-            }
-
-            Node[] neighbours = currentNode.neighbours;
-            int neighboursCount = neighbours.Length;
-            for (int neighbourIndex = 0; neighbourIndex < neighboursCount; ++neighbourIndex)
-            {
-                Node currentNeighbour = neighbours[neighbourIndex];
-                if (!currentNeighbour.onOpenList)
-                {
-                    currentNeighbour.onOpenList = true;
-                    currentNeighbour.parent = currentNode;
-
-                    nodeQueue.Enqueue(currentNeighbour);
-                }
-            }
-        }
-
-        // No path has been found
-        return GetFoundPath(null);
     }
 
     public List<Node> Dijkstra(Node startNode, Node endNode)
@@ -228,21 +135,98 @@ public class Pathfinder : PathfinderBase
 
     public List<Node> AStar(Node startNode, Node endNode)
     {
-        throw new NotImplementedException();
-    }
+        if (startNode == endNode)
+        {
+            startNode.onClosedList = true;
+            return new List<Node>() { startNode };
+        }
 
-    private int ChebyshevDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
-    {
-        throw new NotImplementedException();
+        int visitOrder = 0; // DEBUG CODE: Used to assign order a node has been seen for to node derbugging purposes. Would not bbe used in production code
+
+        // A binary heap is a more efficient data structure to sort nodes based on costs for A*
+        // However you could use the sorted list that is commented out instead
+        BinaryHeap<Node> openList = new BinaryHeap<Node>(nodes.Length);
+
+        //List<Node> openList = new List<Node>(nodes.Length);
+
+        openList.Add(startNode);
+        Node currentNode;
+
+        while (openList.Count > 0)
+        {
+            // For the binary heap implementation uncomment this and comment/remove the 3 lines after.
+            currentNode = openList.Remove();
+
+            //openList.Sort();
+            //currentNode = openList[0];
+            //openList.RemoveAt(0);
+
+            // Mark as being on closed list as by removing from the open list it means the shortest route has been found to
+            // this node. By using a boolean variable to signify this we can avoid using another list which can save memory
+            // NOTE: technically currentNode.onOpenList should be set to false here for complete correctness has it has
+            // been removed from the open list, but we don't have to do this as checks for the closed list happen first in
+            // the algorithm when considering neighbours
+            currentNode.onClosedList = true;
+
+            currentNode.visitOrder = visitOrder++; // DEBUG CODE: Used to assign order a node has been seen for to node derbugging purposes. Would not bbe used in production code
+
+            // If this node is the end node then the path has been found and we just need to return it
+            if (currentNode == endNode)
+            {
+                return GetFoundPath(endNode);
+            }
+
+            // Need to determine which neighbours can be added
+            Node[] neighbours = currentNode.neighbours;
+            int neighboursCount = neighbours.Length;
+            for (int connectedNodesIndex = 0; connectedNodesIndex < neighboursCount; ++connectedNodesIndex)
+            {
+                Node currentNeighbour = neighbours[connectedNodesIndex];
+
+                // If this node is on the closed list then skip as we have already processed it
+                if (currentNeighbour.onClosedList)
+                {
+                    continue;
+                }
+
+                // Calculate costs
+                int gCost = currentNode.g + currentNode.neighbourCosts[connectedNodesIndex];
+
+                // Uncomment/Comment the heuristics to see the differences
+                //int hCost = ChebyshevDistanceHeuristic(connectedNode.x, connectedNode.y, endNode.x, endNode.y);
+                int hCost = EuclideanDistanceHeuristic(currentNeighbour.x, currentNeighbour.y, endNode.x, endNode.y);
+                //int hCost = ManhattanDistanceHeuristic(connectedNode.x, connectedNode.y, endNode.x, endNode.y);
+
+                int fCost = gCost + hCost;
+
+                // If this connected node has a lower overall cost or its the first time we have seen it (since its
+                // not on the open list), then set the values of it.
+                if (fCost <= currentNeighbour.f || !currentNeighbour.onOpenList)
+                {
+                    currentNeighbour.g = gCost;
+                    currentNeighbour.h = hCost;
+                    currentNeighbour.f = fCost;
+                    currentNeighbour.parent = currentNode;
+                }
+
+                // Finally if this node is not on the open list add it and mark it as added so we can check for this
+                // in the future. Note this could have been combined with the above code but to keep the example
+                // simple it has been left like this for readibility.
+                if (!currentNeighbour.onOpenList)
+                {
+                    currentNeighbour.onOpenList = true;
+                    openList.Add(currentNeighbour);
+                }
+            }
+        }
+
+        return GetFoundPath(null);
     }
 
     private int EuclideanDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
     {
-        throw new NotImplementedException();
-    }
+        // messy; return a straight-line integer cost from currentPos to targetPos
+        return (int)new Vector2 ((currentX - targetX) * vMovementCost.x, (currentY - targetY) * vMovementCost.y).magnitude;
 
-    private int ManhattanDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
-    {
-        throw new NotImplementedException();
     }
 }

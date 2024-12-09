@@ -12,3 +12,8 @@ does this make a difference??
 
 i = 1    ++i     i increments to 2 then returns 2
 i = 1    i++     i returns 1 then increments to 2    must save a temporary variable to carry this out!!!
+
+https://www.reddit.com/r/dataisbeautiful/comments/hqga2l/oc_a_comparison_of_4_pathfinding_heuristics/
+
+completely irrelevant question, but how would A* work with portals??
+	if a good heuristic doesn't overestimate, it would have to take portals into account to get from A-B
