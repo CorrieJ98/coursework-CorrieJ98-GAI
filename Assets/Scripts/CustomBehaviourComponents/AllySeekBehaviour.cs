@@ -11,9 +11,9 @@ class AllyAgentSeek : SteeringBehaviour
 {
 
     [SerializeField] private float arrivalRadius = 100f;
+    [SerializeField] public Vector3 targetPosition = Vector3.zero;
     public override Vector3 UpdateBehaviour(SteeringAgent steeringAgent)
     {
-        
         var allySteeringAgent = steeringAgent as AllyAgent;
         
         Vector3 targetPosition = allySteeringAgent.startPosition;

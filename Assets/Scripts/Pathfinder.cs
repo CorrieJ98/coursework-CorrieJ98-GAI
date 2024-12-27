@@ -10,10 +10,10 @@ public class Pathfinder : PathfinderBase
 
     public enum SearchType
     {
-        DFS, BFS, DIJKSTRA, ASTAR
+        BFS, DIJKSTRA, ASTAR
     }
 
-    public SearchType searchType = SearchType.DFS;
+    public SearchType searchType = SearchType.DIJKSTRA;
 
     protected override void Awake()
     {
@@ -44,9 +44,6 @@ public class Pathfinder : PathfinderBase
 
         switch (searchType)
         {
-            case SearchType.DFS:
-                path = DepthFirstSearch(startNode, endNode);
-                break;
             case SearchType.BFS:
                 path = BreadthFirstSearch(startNode, endNode);
                 break;
@@ -102,14 +99,8 @@ public class Pathfinder : PathfinderBase
         return GetFoundPath(null);
     }
 
-    public List<Node> RecurvsiveDepthFirstSearch(Node startNode, Node endNode, int visitOrder = 0)
-    {
-        throw new NotImplementedException();
-    }
     private List<Node> BreadthFirstSearch(Node startNode, Node endNode)
     {
-        // almost direct copy of DFS except using Queue<T> rather than Stack<T> to ensure FIFO (First In First Out)
-
         startNode.onOpenList = true;
 
         Queue<Node> nodeQueue = new Queue<Node>();
@@ -150,15 +141,13 @@ public class Pathfinder : PathfinderBase
 
     public List<Node> Dijkstra(Node startNode, Node endNode)
     {
-        //int min = 0x7FFFFFFF;	// initialise to i32  max to indicate unknown distance
-
         List<Node> openList = new List<Node>();
         List<Node> closedList = new List<Node>();
         openList.Add(startNode);
         startNode.onOpenList = true;
 
 
-        int visitOrder = 0; // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not bbe used in production code
+        int visitOrder = 0; // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not be used in production code
 
         while (openList.Count > 0)
         {
@@ -170,7 +159,7 @@ public class Pathfinder : PathfinderBase
             currentNode.onClosedList = true;
 
             Debug.Log(currentNode.x + ", " + currentNode.y);
-            currentNode.visitOrder = visitOrder++;   // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not bbe used in production code
+            currentNode.visitOrder = visitOrder++;   // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not be used in production code
 
             if (currentNode == endNode)
             {
@@ -186,26 +175,7 @@ public class Pathfinder : PathfinderBase
                 {
                     continue;
                 }
-                /*
-                if (currentNeighbour != null)
-                {
-                    if (currentNeighbour.x == currentNode.x)
-                    {
-                        // neighbour is immediately vertical
-                        currentNeighbour.g += movementYCost;
-                    }
-
-                    if (currentNeighbour.y == currentNode.y)
-                    {
-                        // neighbour is immediately horizontal
-                        currentNeighbour.g += movementXCost;
-                    }
-                    else
-                    {
-                        // neighbour must be diagonal
-                        currentNeighbour.g += movementDiagonalCost;
-                    }
-                };*/
+               
                 int g = currentNode.g + currentNode.neighbourCosts[i];
                 if (g < currentNeighbour.g || currentNeighbour.onOpenList == false)
                 {

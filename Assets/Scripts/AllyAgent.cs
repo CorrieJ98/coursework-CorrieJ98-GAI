@@ -1,18 +1,15 @@
+using UnityEditor.UI;
 using UnityEngine;
 
 public class AllyAgent : SteeringAgent
 {
-	// placeholder for later
-	// private enum AllyAgentFSM {IDLE, MOVING, ENGAGE_ENEMY, RETREAT, DODGE}
-
 	private Pathfinder allyPathfinder;
 
 	private AllyAgentSeek seekBehaviour;
-	private AllyAgentFlee fleeBehaviour;
-	private AllyAgentFleeRocket fleeRocketBehaviour;
-	private AllyAgentDodge dodgeBehaviour;
+	private AllyAgentWander wanderBehaviour;
 
     public SteeringAgent nearestAlly;
+	public SteeringAgent nearestEnemy;
     public Vector3 rocketPosition;
 	public Vector3 startPosition;
 
@@ -21,18 +18,18 @@ public class AllyAgent : SteeringAgent
 	protected override void InitialiseFromAwake()
 	{
 		allyPathfinder = gameObject.AddComponent<Pathfinder>();
+
         seekBehaviour = gameObject.AddComponent<AllyAgentSeek>();
-		fleeBehaviour= gameObject.AddComponent<AllyAgentFlee>();
-		fleeRocketBehaviour = gameObject.AddComponent<AllyAgentFleeRocket>();
-		dodgeBehaviour= gameObject.AddComponent<AllyAgentDodge>();
+		wanderBehaviour = gameObject.AddComponent<AllyAgentWander>();
     }
 
 	protected override void CooperativeArbitration()
 	{
 		base.CooperativeArbitration();
 
-		// keybindings
-		if (Input.GetKeyDown(KeyCode.Alpha1))
+        attackType = Attack.AttackType.Melee;
+        #region Keybindings
+        if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
 			attackType = Attack.AttackType.Melee;
 		}
@@ -53,16 +50,17 @@ public class AllyAgent : SteeringAgent
 
 			AttackWith(attackType);
 		}
-		if(Input.GetMouseButtonDown(1))
-		{
-			SteeringVelocity = Vector3.zero;
-			CurrentVelocity = Vector3.zero;
+		//if(Input.GetMouseButtonDown(1))
+		//{
+		//	SteeringVelocity = Vector3.zero;
+		//	CurrentVelocity = Vector3.zero;
 
-			seekBehaviour.enabled = true;
-		}
-	}
+		//	seekBehaviour.enabled = true;
+		//}
+        #endregion
+    }
 
-	protected override void UpdateDirection()
+    protected override void UpdateDirection()
 	{
 		if (seekBehaviour.enabled)
 		{
@@ -74,5 +72,38 @@ public class AllyAgent : SteeringAgent
 			mouseInWorld.z = 0.0f;
 			transform.up = Vector3.Normalize(mouseInWorld - transform.position);
 		}
+
+        if (GetCurrentDistanceToTarget(seekBehaviour.targetPosition) <= GetWeaponEngagementRange(attackType))
+		{
+			AttackWith(attackType);
+        }
+
+        AttackWith(attackType);
+    }
+
+	private float GetWeaponEngagementRange(Attack.AttackType atk)
+	{
+		switch (atk)
+		{
+			case Attack.AttackType.Rocket:
+				return Attack.RocketData.range; 
+
+			case Attack.AttackType.AllyGun:
+				return Attack.AllyGunData.range;
+
+			case Attack.AttackType.Melee:
+				return Attack.MeleeData.range;
+
+			default:
+				return SteeringAgent.CollisionRadius;
+		}
+	}
+
+	private float GetCurrentDistanceToTarget(Vector3 targetPos)
+	{
+		Vector3 dir;
+		dir = targetPos - transform.position;
+
+		return dir.magnitude;
 	}
 }

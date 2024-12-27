@@ -9,6 +9,12 @@ NOTE possibly meaningful
 hamids incr/decr is PROCEEDED
 with the operator (ie ++i rather than i++)
 does this make a difference??
+	i = 1    ++i     i increments to 2 then returns 2
+	i = 1    i++     i returns 1 then increments to 2    must save a temporary variable to carry this out!!!
 
-i = 1    ++i     i increments to 2 then returns 2
-i = 1    i++     i returns 1 then increments to 2    must save a temporary variable to carry this out!!!
+
+Questions:
+	How do I take the found path and make the agents seek to each node?
+		Pop each node off of the list and set its (x,y) to targetPosition
+
+	How do I create Nodes on each grid square?

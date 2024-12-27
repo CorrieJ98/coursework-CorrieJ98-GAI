@@ -145,8 +145,8 @@ public abstract class SteeringAgent : MonoBehaviour
 	{
 		get
 		{
-			GetComponents<SteeringBehaviour>(steeringBehvaiours);
-			foreach (SteeringBehaviour currentBehaviour in steeringBehvaiours)
+			GetComponents<SteeringBehaviour>(steeringBehaviours);
+			foreach (SteeringBehaviour currentBehaviour in steeringBehaviours)
 			{
 				if (currentBehaviour.ShowDebugLines)
 				{
@@ -159,8 +159,8 @@ public abstract class SteeringAgent : MonoBehaviour
 
 		set
 		{
-			GetComponents<SteeringBehaviour>(steeringBehvaiours);
-			foreach (SteeringBehaviour currentBehaviour in steeringBehvaiours)
+			GetComponents<SteeringBehaviour>(steeringBehaviours);
+			foreach (SteeringBehaviour currentBehaviour in steeringBehaviours)
 			{
 				currentBehaviour.ShowDebugLines = value;
 			}
@@ -178,7 +178,7 @@ public abstract class SteeringAgent : MonoBehaviour
 	private Vector3 currentPosition;
 
 	/// <summary>Stores a list of all steering behaviours that are on a SteeringAgent GameObject, regardless if they are enabled or not</summary>
-	private List<SteeringBehaviour> steeringBehvaiours = new List<SteeringBehaviour>();
+	private List<SteeringBehaviour> steeringBehaviours = new List<SteeringBehaviour>();
 
 	/// <summary>Tracks how many seconds have elapsed since last CooperativeArbitration function has run</summary>
 	private float updateTimeInSecondsForAI;
@@ -245,7 +245,7 @@ public abstract class SteeringAgent : MonoBehaviour
 		UpdateDirection();
 
 		// Show debug lines in scene view
-		foreach (SteeringBehaviour currentBehaviour in steeringBehvaiours)
+		foreach (SteeringBehaviour currentBehaviour in steeringBehaviours)
 		{
 			currentBehaviour.DebugDraw(this);
 		}
@@ -270,8 +270,8 @@ public abstract class SteeringAgent : MonoBehaviour
 	{
 		SteeringVelocity = Vector3.zero;
 		
-		GetComponents<SteeringBehaviour>(steeringBehvaiours);
-		foreach (SteeringBehaviour currentBehaviour in steeringBehvaiours)
+		GetComponents<SteeringBehaviour>(steeringBehaviours);
+		foreach (SteeringBehaviour currentBehaviour in steeringBehaviours)
 		{
 			if(currentBehaviour.enabled)
 			{
