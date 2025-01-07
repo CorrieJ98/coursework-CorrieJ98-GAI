@@ -17,4 +17,8 @@ Questions:
 	How do I take the found path and make the agents seek to each node?
 		Pop each node off of the list and set its (x,y) to targetPosition
 
-	How do I create Nodes on each grid square?
+	How do I create Nodes on each grid square, without writing over content within
+	the DO NOT CHANGE directory to use pathfinding algorithms such as A*?
+
+	How do I create a WTS system if the content I (think) need to
+	modify is locked behind DO NOT CHANGE?
