@@ -64,7 +64,7 @@ public class PathfinderBase : MonoBehaviour
                 int nodeIndex = nodeX + (vNodeArea.x * nodeY);
                 Node node = nodes[nodeIndex];
 
-                if (initialMapData[nodeIndex] > 0)
+                if (initialMapData[nodeIndex] != 3)
                 {
                     node.neighbours = new Node[0];
                     node.neighbourCosts = new int[0];
@@ -74,6 +74,7 @@ public class PathfinderBase : MonoBehaviour
                 int connectedNodesCount = 0;
                 for (int neighbourY = nodeY - 1; neighbourY <= nodeY + 1; ++neighbourY)
                 {
+                    // if neighbour above or below goes outwith map bounds
                     if (neighbourY < 0 || neighbourY >= vNodeArea.y)
                     {
                         continue;
@@ -81,10 +82,11 @@ public class PathfinderBase : MonoBehaviour
 
                     for (int neighbourX = nodeX - 1; neighbourX <= nodeX + 1; ++neighbourX)
                     {
-                        if (neighbourX < 0 ||
-                            neighbourX >= vNodeArea.x ||
-                            (neighbourX == nodeX && neighbourY == nodeY) ||
-                            initialMapData[neighbourX + (neighbourY * vNodeArea.x)] > 0)
+                            // if neighbour left or right go outwith map bounds
+                            // or if the node we are checking is in fact the correct node
+                            // or if the terrain at this index is TREE (enum 3)
+                       
+                        if (neighbourX < 0 || neighbourX >= vNodeArea.x || (neighbourX == nodeX && neighbourY == nodeY) || initialMapData[neighbourX + (neighbourY * vNodeArea.x)] == 3)
                         {
                             continue;
                         }
@@ -92,7 +94,7 @@ public class PathfinderBase : MonoBehaviour
                         ++connectedNodesCount;
                     }
                 }
-
+                // code doesnt seem to reach here
                 node.neighbours = new Node[connectedNodesCount];
                 node.neighbourCosts = new int[connectedNodesCount];
 
@@ -109,7 +111,7 @@ public class PathfinderBase : MonoBehaviour
                         if (neighbourX < 0 ||
                             neighbourX >= vNodeArea.x ||
                             (neighbourX == nodeX && neighbourY == nodeY) ||
-                            initialMapData[neighbourX + (neighbourY * vNodeArea.x)] > 0)
+                            initialMapData[neighbourX + (neighbourY * vNodeArea.x)] == 3)
                         {
                             continue;
                         }
