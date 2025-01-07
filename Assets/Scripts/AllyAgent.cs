@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor.UI;
 using UnityEngine;
 
@@ -8,28 +9,40 @@ public class AllyAgent : SteeringAgent
 	private AllyAgentSeek seekBehaviour;
 	private AllyAgentWander wanderBehaviour;
 
-    public SteeringAgent nearestAlly;
+
+	public SteeringAgent nearestAlly;
 	public SteeringAgent nearestEnemy;
-    public Vector3 rocketPosition;
+	public Vector3 rocketPosition;
 	public Vector3 startPosition;
 
-    private Attack.AttackType attackType = Attack.AttackType.AllyGun;
+	private Vector3 targetPosition;
+	private int pathIterator;
+	private Attack.AttackType attackType = Attack.AttackType.AllyGun;
 
 	protected override void InitialiseFromAwake()
 	{
 		allyPathfinder = gameObject.AddComponent<Pathfinder>();
-
-        seekBehaviour = gameObject.AddComponent<AllyAgentSeek>();
+		seekBehaviour = gameObject.AddComponent<AllyAgentSeek>();
 		wanderBehaviour = gameObject.AddComponent<AllyAgentWander>();
-    }
+	}
 
 	protected override void CooperativeArbitration()
 	{
+		List<Node> currentPath;
+
 		base.CooperativeArbitration();
 
-        attackType = Attack.AttackType.Melee;
-        #region Keybindings
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+		nearestEnemy = SteeringAgent.GetNearestAgent(transform.position, GameData.Instance.enemies);
+
+		if (nearestEnemy != null)
+		{
+			currentPath = allyPathfinder.ExecuteAlgorithm(transform.position, nearestEnemy.transform.position);
+		}
+
+		attackType = Attack.AttackType.Melee;
+
+		#region Keybindings
+		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
 			attackType = Attack.AttackType.Melee;
 		}
@@ -43,7 +56,7 @@ public class AllyAgent : SteeringAgent
 		}
 		if (Input.GetKey(KeyCode.Space))
 		{
-			if(attackType == Attack.AttackType.Rocket && GameData.Instance.AllyRocketsAvailable <= 0)
+			if (attackType == Attack.AttackType.Rocket && GameData.Instance.AllyRocketsAvailable <= 0)
 			{
 				attackType = Attack.AttackType.AllyGun;
 			}
@@ -57,10 +70,10 @@ public class AllyAgent : SteeringAgent
 
 		//	seekBehaviour.enabled = true;
 		//}
-        #endregion
-    }
+		#endregion
+	}
 
-    protected override void UpdateDirection()
+	protected override void UpdateDirection()
 	{
 		if (seekBehaviour.enabled)
 		{
@@ -73,20 +86,20 @@ public class AllyAgent : SteeringAgent
 			transform.up = Vector3.Normalize(mouseInWorld - transform.position);
 		}
 
-        if (GetCurrentDistanceToTarget(seekBehaviour.targetPosition) <= GetWeaponEngagementRange(attackType))
+		if (GetCurrentDistanceToTarget(targetPosition) <= GetWeaponEngagementRange(attackType))
 		{
 			AttackWith(attackType);
-        }
+		}
 
-        AttackWith(attackType);
-    }
+		AttackWith(attackType);
+	}
 
 	private float GetWeaponEngagementRange(Attack.AttackType atk)
 	{
 		switch (atk)
 		{
 			case Attack.AttackType.Rocket:
-				return Attack.RocketData.range; 
+				return Attack.RocketData.range;
 
 			case Attack.AttackType.AllyGun:
 				return Attack.AllyGunData.range;

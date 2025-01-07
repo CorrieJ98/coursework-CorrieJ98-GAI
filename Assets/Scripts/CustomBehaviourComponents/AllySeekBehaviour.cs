@@ -10,8 +10,7 @@ using UnityEngine;
 class AllyAgentSeek : SteeringBehaviour
 {
 
-    [SerializeField] private float arrivalRadius = 100f;
-    [SerializeField] public Vector3 targetPosition = Vector3.zero;
+    [SerializeField] private float arrivalRadius = 20.0f;
     public override Vector3 UpdateBehaviour(SteeringAgent steeringAgent)
     {
         var allySteeringAgent = steeringAgent as AllyAgent;
@@ -19,11 +18,10 @@ class AllyAgentSeek : SteeringBehaviour
         Vector3 targetPosition = allySteeringAgent.startPosition;
         Vector3 moveDist = targetPosition - transform.position;
 
-        var nearestEnemy = SteeringAgent.GetNearestAgent(transform.position, GameData.Instance.enemies);
-        if (nearestEnemy != null) //&&
+        if (allySteeringAgent.nearestEnemy != null) //&&
         /*    (targetPosition - transform.position).magnitude < 10.0f &&
         (nearestEnemy.transform.position - transform.position).magnitude <= Attack.AllyGunData.range) */{
-            targetPosition = nearestEnemy.transform.position;
+            targetPosition = allySteeringAgent.nearestEnemy.transform.position;
         }
 
         if (moveDist.magnitude <= (arrivalRadius))

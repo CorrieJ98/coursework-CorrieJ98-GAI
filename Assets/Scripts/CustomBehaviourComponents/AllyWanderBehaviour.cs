@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class AllyAgentWander : SteeringBehaviour
 {
-    [SerializeField] protected float circleRadius = 400.0f;
-    [SerializeField] protected float circleDistance = 500.0f;
+    [SerializeField] protected float circleRadius = 40.0f;
+    [SerializeField] protected float circleDistance = 50.0f;
     [SerializeField] protected float maxRandomDisplacement = 30.0f;
 
     private Vector3 previousTargetPosition;

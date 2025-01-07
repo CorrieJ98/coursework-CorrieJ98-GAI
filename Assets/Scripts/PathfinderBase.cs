@@ -29,17 +29,10 @@ public class PathfinderBase : MonoBehaviour
     // Map.cs map width & height are 100. DO NOT CHANGE
     protected Vector2Int vNodeArea = new Vector2Int(100,100);
 
-    private static Map map;
 
     protected virtual void Awake()
     {
-        if(map == null)
-        {
-            throw new System.NotImplementedException("PathfinderBase.cs -> map = GetComponent<Map> is null");
-        }
-
-        map = GetComponent<Map>();
-        initialMapData = map.GetMapData();
+        initialMapData = GameData.Instance.Map.GetMapData();
 
         movementDiagMinusXY = vMovementCost.z - (vMovementCost.x + vMovementCost.y);
         CreateNodes();
@@ -57,7 +50,7 @@ public class PathfinderBase : MonoBehaviour
                 Node node = new Node();
                 node.x = x;
                 node.y = y;
-                nodes[x = (vNodeArea.x * y)] = node;
+                nodes[x + (vNodeArea.x * y)] = node;
             }
         }
     }

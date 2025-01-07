@@ -18,12 +18,12 @@ public class Pathfinder : PathfinderBase
     protected override void Awake()
     {
         base.Awake();
-        GetComponent<GridRenderer>().Initialise(Map.MapWidth, Map.MapHeight, vGridUnitSize.x, vGridUnitSize.y);
-        ExecuteAlgorithm();
+        // GetComponent<GridRenderer>().Initialise(Map.MapWidth, Map.MapHeight, vGridUnitSize.x, vGridUnitSize.y);
     }
 
-    public void ExecuteAlgorithm()
+    public List<Node> ExecuteAlgorithm(Vector3 startPos, Vector3 targetPos)
     {
+        List<Node> path = null;
         // Clear any temporary data the nodes have from any previous execution of an algorithm
         foreach (var node in nodes)
         {
@@ -31,26 +31,23 @@ public class Pathfinder : PathfinderBase
         }
 
         // Set start and end nodes
-        Node startNode = nodes[vStartNodePos.x + (vNodeArea.x * vStartNodePos.y)];
-        Node endNode = nodes[vTargetNodePos.x + (vNodeArea.x * vTargetNodePos.y)];
-
-        List<Node> path = null;
+        Node startNode = nodes[(int)startPos.x + (vNodeArea.x * (int)startPos.y)];
+        Node endNode = nodes[(int)targetPos.x + (vNodeArea.x * (int)targetPos.y)];
 
         switch (searchType)
         {
             case SearchType.BFS:
-                path = BreadthFirstSearch(startNode, endNode);
+                return path = BreadthFirstSearch(startNode, endNode);
                 break;
             case SearchType.DIJKSTRA:
-                path = Dijkstra(startNode, endNode);
+                return path = Dijkstra(startNode, endNode);
                 break;
             case SearchType.ASTAR:
-                path = AStar(startNode, endNode);
+                return path = AStar(startNode, endNode);
                 break;
+            default:
+                return path = new List<Node>();
         }
-
-        // obsolete from pathfinding coursework
-        // GetComponent<GridRenderer>().RenderPath(path);
     }
 
     public List<Node> DepthFirstSearch(Node startNode, Node endNode)
