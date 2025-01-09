@@ -5,7 +5,6 @@ using UnityEngine;
 
 class AllyAgentFlee : SteeringBehaviour
 {
-    // taken from AllySeekBehaviour.cs with the vector flipped
     public override Vector3 UpdateBehaviour(SteeringAgent steeringAgent)
     {
         var allySteeringAgent = steeringAgent as AllyAgent;

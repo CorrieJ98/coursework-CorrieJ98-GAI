@@ -9,7 +9,6 @@ using UnityEngine;
 
 class AllyAgentSeek : SteeringBehaviour
 {
-
     [SerializeField] private float arrivalRadius = 20.0f;
     public override Vector3 UpdateBehaviour(SteeringAgent steeringAgent)
     {
@@ -20,7 +19,8 @@ class AllyAgentSeek : SteeringBehaviour
 
         if (allySteeringAgent.nearestEnemy != null) //&&
         /*    (targetPosition - transform.position).magnitude < 10.0f &&
-        (nearestEnemy.transform.position - transform.position).magnitude <= Attack.AllyGunData.range) */{
+        (nearestEnemy.transform.position - transform.position).magnitude <= Attack.AllyGunData.range) */
+        {
             targetPosition = allySteeringAgent.nearestEnemy.transform.position;
         }
 
@@ -28,9 +28,10 @@ class AllyAgentSeek : SteeringBehaviour
         {
             Arrival(moveDist);
         }
-            desiredVelocity = Vector3.Normalize(targetPosition - transform.position) * SteeringAgent.MaxCurrentSpeed;
+        
+        desiredVelocity = Vector3.Normalize(targetPosition - transform.position) * SteeringAgent.MaxCurrentSpeed;
         steeringVelocity = desiredVelocity - steeringAgent.CurrentVelocity;
-        return steeringVelocity;
+        return steeringVelocity * 2;
     }
 
     private Vector3 Arrival(Vector3 moveDist)

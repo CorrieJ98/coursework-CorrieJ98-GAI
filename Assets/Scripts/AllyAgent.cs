@@ -8,6 +8,7 @@ public class AllyAgent : SteeringAgent
 
 	private AllyAgentSeek seekBehaviour;
 	private AllyAgentWander wanderBehaviour;
+	private AllyObstacleAvoidance avoidBehaviour;
 
 
 	public SteeringAgent nearestAlly;
@@ -24,6 +25,7 @@ public class AllyAgent : SteeringAgent
 		allyPathfinder = gameObject.AddComponent<Pathfinder>();
 		seekBehaviour = gameObject.AddComponent<AllyAgentSeek>();
 		wanderBehaviour = gameObject.AddComponent<AllyAgentWander>();
+		avoidBehaviour = gameObject.AddComponent<AllyObstacleAvoidance>();
 	}
 
 	protected override void CooperativeArbitration()
